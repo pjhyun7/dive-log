@@ -1250,8 +1250,8 @@ chapters.forEach(s=>sectionObserver.observe(s));
   const tripDate = t => t.start===t.end ? fmtDate(t.start) : `${fmtDate(t.start)}–${fmtDate(t.end)}`;
   const byRecency = [...TRIPS].sort((a,b)=>String(b.end||b.start).localeCompare(String(a.end||a.start)));
 
-  /* --- PHOTO LOG: 사진이 등록된 트립 최근 3장만 --- */
-  const withPhoto = byRecency.filter(t=>storyOf(t).cover).slice(0,3);
+  /* --- PHOTO LOG: 사진이 등록된 모든 트립 (최신순) --- */
+  const withPhoto = byRecency.filter(t=>storyOf(t).cover);
   if(withPhoto.length){
     const items = withPhoto.map(t=>{
       const st=storyOf(t), alt=`${t.ko} · ${t.region||''}`.trim(), anim=st.anim||'';
