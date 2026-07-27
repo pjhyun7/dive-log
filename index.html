@@ -622,6 +622,44 @@ html,body{overflow-x:hidden}
   .species-tags{gap:4px}
 }
 
+
+/* ============================================================
+   photos — PHOTO LOG 스트립 · 라이트박스
+   사진은 images/trips/*.webp, TRIP_STORIES.cover 로 연결.
+   cover 가 null 이면 표시되지 않습니다.
+   ============================================================ */
+.photolog{margin-top:14px}
+.photolog-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.photolog-item{position:relative;display:block;min-height:150px;padding:0;border:1px solid var(--shelf);
+  overflow:hidden;cursor:pointer;background:rgba(10,39,53,.5);font:inherit;text-align:left}
+.photolog-item img{width:100%;height:150px;object-fit:cover;display:block;filter:saturate(.8) contrast(1.04)}
+.photolog-item::after{content:"";position:absolute;left:0;right:0;bottom:0;height:58%;
+  background:linear-gradient(180deg,transparent,rgba(4,20,28,.86))}
+.pl-cap{position:absolute;left:11px;right:11px;bottom:9px;z-index:1;color:var(--foam);font-size:11.5px;line-height:1.35}
+.pl-cap small{display:block;margin-top:2px;color:var(--mute);font-family:var(--mono);font-size:9px;letter-spacing:.05em}
+.photolog-item:hover{border-color:var(--shallow)}
+.photolog-item:hover img{filter:saturate(.95) contrast(1.06)}
+.photolog-item .pl-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1;
+  width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  color:var(--foam);font-size:12px;padding-left:2px;background:rgba(4,20,28,.5);border:1px solid rgba(220,235,234,.5);pointer-events:none}
+.photolog-item.has-anim:hover .pl-play{border-color:var(--amber);color:var(--amber)}
+
+.lightbox{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;
+  padding:26px;background:rgba(2,10,15,.87);backdrop-filter:blur(3px)}
+.lightbox[hidden]{display:none}
+.lb-fig{margin:0;max-width:min(1000px,94vw);max-height:88vh;display:flex;flex-direction:column;align-items:center}
+.lb-img{max-width:100%;max-height:80vh;object-fit:contain;border:1px solid var(--shelf)}
+.lb-cap{margin-top:12px;color:var(--foam);font-size:12.5px;text-align:center}
+.lb-cap small{margin-left:8px;color:var(--mute);font-family:var(--mono);font-size:10px;letter-spacing:.05em}
+.lb-close{position:absolute;top:16px;right:18px;width:38px;height:38px;line-height:1;font-size:16px;cursor:pointer;
+  color:var(--foam);border:1px solid rgba(220,235,234,.3);background:rgba(4,20,28,.5)}
+.lb-close:hover{border-color:var(--amber);color:var(--amber)}
+
+@media(max-width:760px){
+  .photolog-strip{display:grid;grid-auto-flow:column;grid-template-columns:none;grid-auto-columns:78vw;
+    gap:9px;overflow-x:auto;margin-right:-14px;padding-right:14px;scroll-snap-type:x mandatory}
+  .photolog-item{scroll-snap-align:start}
+}
 </style>
 </head>
 <body>
@@ -669,6 +707,7 @@ html,body{overflow-x:hidden}
     <p>사진이 없어도 남는 첫 다이브, 깊이, 수온과 여행의 이정표.</p>
   </div>
   <div class="memorygrid" id="memorygrid"></div>
+  <div id="photolog"></div>
   <div class="wildlife-panel">
     <div class="wildlife-copy"><span class="chapter-no">SEA LIFE NOTES</span><h3>직접 남긴 관찰 기록</h3><p>기록으로 확인되는 생물만 표시합니다. 트립 데이터에 관찰 항목을 더하면 자동으로 확장됩니다.</p></div>
     <div class="wildlife-list" id="wildlife-list"></div>
@@ -716,6 +755,11 @@ html,body{overflow-x:hidden}
 </div>
 <div id="tip"></div>
 
+<div id="lightbox" class="lightbox" hidden role="dialog" aria-modal="true" aria-label="사진 확대 보기">
+  <button class="lb-close" type="button" aria-label="닫기">✕</button>
+  <figure class="lb-fig"><img class="lb-img" alt=""><figcaption class="lb-cap"></figcaption></figure>
+</div>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 /* ============================================================
@@ -740,14 +784,14 @@ const SITES = DB.sites, DIVES = DB.dives, TRIPS = DB.trips;
    cover 예시: 'images/trips/bunaken.webp' (null이면 기존 스탬프/해도 그래픽 사용) */
 const TRIP_STORIES = {
   'Dahab OWD': {
-    summary:'첫 네 번의 다이빙과 OWD 인증을 남긴 시작점.', cover:null, species:[]
+    summary:'첫 네 번의 다이빙과 OWD 인증을 남긴 시작점.', cover:'images/trips/dahab-owd/cover.webp', species:[]
   },
   'Dahab AOWD': {
-    summary:'16번의 다이빙으로 이어진 두 번째 다합 기록. 라이트하우스에서 파이프피시를 관찰.', cover:null,
+    summary:'16번의 다이빙으로 이어진 두 번째 다합 기록. 라이트하우스에서 파이프피시를 관찰.', cover:'images/trips/dahab-aowd/cover.webp',
     species:[{name:'파이프피시',site:'라이트하우스',date:'2024-12-17'}]
   },
   'Miyakojima': {
-    summary:'오키나와 미야코지마에서 이어진 9번의 섬 다이빙.', cover:null, species:[]
+    summary:'오키나와 미야코지마에서 이어진 9번의 섬 다이빙.', cover:'images/trips/miyakojima/cover.webp', species:[]
   },
   'Bohol': {
     summary:'팡라오와 발리카삭을 오간 9번의 다이빙.', cover:null, species:[]
@@ -759,10 +803,10 @@ const TRIP_STORIES = {
     summary:'4일간 14번 이어진 시밀란·수린 리브어보드.', cover:null, species:[]
   },
   'Bunaken': {
-    summary:'이틀간 6번, 최장 78분까지 이어진 부나켄 월 다이빙.', cover:null, species:[]
+    summary:'이틀간 6번, 최장 78분까지 이어진 부나켄 월 다이빙.', cover:'images/trips/bunaken/cover.webp', anim:'images/trips/bunaken/cover.gif', species:[]
   },
   '양양': {
-    summary:'국내 첫 다이빙. 표층 27–28°C에서 최대수심 9–10°C까지 내려간 냉수 경험.', cover:null, species:[]
+    summary:'국내 첫 다이빙. 표층 27–28°C에서 최대수심 9–10°C까지 내려간 냉수 경험.', cover:'images/trips/yangyang/cover.webp', species:[]
   }
 };
 const storyOf = t => TRIP_STORIES[t.name] || {summary:'',cover:null,species:[]};
@@ -1196,6 +1240,50 @@ const sectionObserver=new IntersectionObserver(entries=>{
   });
 },{rootMargin:'-20% 0px -70%'});
 chapters.forEach(s=>sectionObserver.observe(s));
+
+/* ====== 사진: PHOTO LOG 스트립 · 라이트박스 ======
+   데이터는 TRIP_STORIES(위쪽)만 고치면 됩니다.
+   - cover: 'images/trips/xxx.webp' (null 이면 표시 안 함)
+   - 사진이 하나도 없어도 이 아래 코드는 안전하게 동작합니다. */
+(function(){
+  const esc = s => String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const tripDate = t => t.start===t.end ? fmtDate(t.start) : `${fmtDate(t.start)}–${fmtDate(t.end)}`;
+  const byRecency = [...TRIPS].sort((a,b)=>String(b.end||b.start).localeCompare(String(a.end||a.start)));
+
+  /* --- PHOTO LOG: 사진이 등록된 트립 최근 3장만 --- */
+  const withPhoto = byRecency.filter(t=>storyOf(t).cover).slice(0,3);
+  if(withPhoto.length){
+    const items = withPhoto.map(t=>{
+      const st=storyOf(t), alt=`${t.ko} · ${t.region||''}`.trim(), anim=st.anim||'';
+      return `<button class="photolog-item${anim?' has-anim':''}" type="button" data-src="${esc(st.cover)}" data-full="${esc(anim)}" data-cap="${esc(t.ko)}" data-sub="${esc(tripDate(t))}" aria-label="${esc(t.ko)} ${anim?'영상 재생':'사진 크게 보기'}">
+        <img src="${esc(st.cover)}" alt="${esc(alt)}" loading="lazy" onerror="this.closest('.photolog-item').remove()">
+        ${anim?'<span class="pl-play" aria-hidden="true">▶</span>':''}
+        <span class="pl-cap">${esc(t.ko)}<small>${esc(tripDate(t))}</small></span>
+      </button>`;
+    }).join('');
+    document.getElementById('photolog').innerHTML =
+      `<div class="photolog"><div class="subhead"><span>PHOTO LOG</span><b>${withPhoto.length}</b></div>
+        <div class="photolog-strip">${items}</div></div>`;
+  }
+
+  /* --- 라이트박스 (외부 라이브러리 없음) --- */
+  const lb=document.getElementById('lightbox');
+  const lbImg=lb.querySelector('.lb-img'), lbCap=lb.querySelector('.lb-cap');
+  let lastFocus=null;
+  function openLB(src,cap,sub,alt){
+    lbImg.src=src; lbImg.alt=alt||cap||'';
+    lbCap.innerHTML=`${esc(cap)}${sub?`<small>${esc(sub)}</small>`:''}`;
+    lb.hidden=false; document.body.style.overflow='hidden';
+    lb.querySelector('.lb-close').focus();
+  }
+  function closeLB(){ lb.hidden=true; lbImg.removeAttribute('src'); document.body.style.overflow=''; if(lastFocus) lastFocus.focus(); }
+  document.addEventListener('click',e=>{
+    const t=e.target.closest('.photolog-item[data-src]');
+    if(t){ lastFocus=t; openLB(t.dataset.full||t.dataset.src,t.dataset.cap,t.dataset.sub,t.querySelector('img')&&t.querySelector('img').alt); return; }
+    if(e.target.closest('.lb-close') || e.target===lb) closeLB();
+  });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape' && !lb.hidden) closeLB(); });
+})();
 
 </script>
 </body>
