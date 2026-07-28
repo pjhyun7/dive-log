@@ -688,10 +688,8 @@ html,body{overflow-x:hidden}
   .life-tabs{padding:6px}
   .life-tab{flex:0 0 auto;min-width:105px}
   .life-view{padding:14px}
-  .life-grid,.wishlist-grid{display:grid;grid-auto-flow:column;grid-template-columns:none;grid-auto-columns:78vw;
-    overflow-x:auto;margin-right:-14px;padding-right:14px;scroll-snap-type:x mandatory}
-  .life-card,.wish-card{scroll-snap-align:start}
-  .life-empty{grid-column:auto;grid-row:1}
+  .life-grid,.wishlist-grid{grid-template-columns:1fr}
+  .life-card{min-height:0}
 }
 
 /* ============================================================
