@@ -692,6 +692,12 @@ html,body{overflow-x:hidden}
   .life-card{min-height:0}
 }
 
+/* 그날 메모 — 날짜별 하루 회고 (Technical Log 트립 펼침 시) */
+.day-note{margin:8px 2px 11px;padding:11px 13px;border:1px solid var(--shelf);
+  border-left:2px solid var(--amber-dim);background:rgba(10,39,53,.3)}
+.day-note-h{display:block;color:var(--shallow);font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;margin-bottom:5px}
+.day-note p{margin:0;color:var(--foam);font-size:12px;line-height:1.6}
+
 /* ============================================================
    CONDITIONS — 트립 조석·조류 (Technical Log 트립 펼침 시)
    ============================================================ */
@@ -913,6 +919,13 @@ const DIVE_EXTRA = {
   58:{guide:'Flip', buddy:'Jeff'}
 };
 DIVES.forEach(d => { if(DIVE_EXTRA[d.no]) Object.assign(d, DIVE_EXTRA[d.no]); });
+
+/* 그날 메모 — 날짜별 하루 회고(자유 기록). 'YYYY-MM-DD':'…' 형식으로 추가하면
+   Technical Log에서 해당 날짜 다이브 위에 표시됩니다. 여기만 고치면 됩니다. */
+const DAY_NOTES = {
+  '2025-12-21': '리슐리외 록에서 하루 4다이브. (예시 메모 — 이 줄을 지우고 그날 기억을 적으세요)'
+  // '2025-12-22': '토린라·파카드·터틀렛지·파인애플. 오후엔 조류가 잦아들어 편했음.'
+};
 
 /* v4 편집 데이터 — 사진·회고·관찰 생물은 이 객체만 수정하면 됩니다.
    cover 예시: 'images/trips/bunaken.webp' (null이면 기존 스탬프/해도 그래픽 사용) */
@@ -1353,6 +1366,12 @@ function currentStrip(cur){
     +`<div class="cur-bars">${bars}</div>`
     +`<div class="cur-scale">시간대별 조류(kn) · 최고 ${peak[1]}kn @${String(peak[0]).padStart(2,'0')}:00 → 최저 ${vmin}kn</div></div>`;
 }
+function dayNote(date){
+  const n = DAY_NOTES[date];
+  if(!n) return '';
+  const safe = String(n).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  return `<div class="day-note"><span class="day-note-h">그날 메모 · ${fmtDate(date)}</span><p>${safe}</p></div>`;
+}
 function renderConditions(t){
   const c=storyOf(t).conditions;
   if(!c) return '';
@@ -1384,9 +1403,10 @@ TRIPS.forEach((t, i) => {
        <span class="tmeta">${fmtDate(t.start)} – ${fmtDate(t.end)}<br>${t.n} DIVES${deep.length?' · MAX '+Math.max(...deep).toFixed(1)+'m':''}</span>
      </div>
      <div class="rows">` + renderConditions(t) +
-    ds.map(d => {
+    ds.map((d, idx) => {
       const s = siteById[d.site];
-      return `<div class="row" data-no="${d.no}" tabindex="0" role="button" aria-expanded="false">
+      const newDay = idx===0 || ds[idx-1].date !== d.date;
+      return (newDay ? dayNote(d.date) : '') + `<div class="row" data-no="${d.no}" tabindex="0" role="button" aria-expanded="false">
         <span class="n">${String(d.no).padStart(2,'0')}</span>
         <span class="d">${fmtDate(d.date)}</span>
         <span class="s">${glyph(s.type)}${s.ko}${s.en?`<u>${s.en}</u>`:''}${d.note?`<i>기록 메모 있음</i>`:''}</span>
