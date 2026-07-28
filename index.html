@@ -624,6 +624,77 @@ html,body{overflow-x:hidden}
 
 
 /* ============================================================
+   MARINE LIFE — 수중 생물 도감 (SIGHTINGS / LIFE LIST / WISHLIST)
+   생물 데이터는 스크립트의 LIFE_SIGHTINGS · LIFE_WISHLIST 배열만 고치면 됩니다.
+   ============================================================ */
+.marine-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.marine-stat{padding:17px 16px;border:1px solid var(--shelf);background:rgba(10,39,53,.38)}
+.marine-stat b{display:block;color:var(--amber);font-family:var(--mono);font-size:25px;font-weight:500;line-height:1}
+.marine-stat span{display:block;margin-top:7px;color:var(--mute);font-size:10px;line-height:1.4}
+
+.life-panel{border:1px solid var(--shelf);background:rgba(10,39,53,.32)}
+.life-tabs{display:flex;gap:3px;padding:8px;border-bottom:1px solid var(--shelf);overflow-x:auto}
+.life-tab{flex:1;min-width:110px;padding:10px 12px;border:1px solid transparent;color:var(--mute);
+  background:transparent;font-family:var(--mono);font-size:9px;letter-spacing:.1em;cursor:pointer}
+.life-tab[aria-selected="true"]{color:var(--foam);border-color:var(--shelf);background:rgba(18,64,79,.42)}
+.life-tab:focus-visible{outline:1px solid var(--amber);outline-offset:-1px}
+.life-view{display:none;padding:18px}
+.life-view.active{display:block}
+.life-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.life-card{position:relative;min-height:145px;padding:17px;border:1px solid rgba(76,157,174,.22);
+  background:linear-gradient(145deg,rgba(18,64,79,.48),rgba(4,20,28,.34));overflow:hidden}
+.life-card.is-clickable{cursor:pointer}
+.life-card.is-clickable:hover,.life-card.is-clickable:focus-visible{border-color:var(--shallow);outline:0}
+.life-card::after{content:"";position:absolute;right:-24px;bottom:-24px;width:88px;height:88px;
+  border:1px solid rgba(76,157,174,.1);border-radius:50%;pointer-events:none}
+.life-top{position:relative;z-index:1;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.life-group{color:var(--shallow);font-family:var(--mono);font-size:8px;letter-spacing:.12em;text-transform:uppercase;padding-top:6px}
+.life-first{color:var(--amber)}
+.life-badge{padding:3px 6px;border:1px solid rgba(233,161,59,.45);color:var(--amber);
+  font-family:var(--mono);font-size:7.5px;letter-spacing:.08em;white-space:nowrap}
+.life-media{position:relative;flex:0 0 auto;width:52px;height:52px;display:flex;align-items:center;justify-content:center;
+  border:1px solid rgba(76,157,174,.28);background:rgba(4,20,28,.4);overflow:hidden}
+.life-glyph{width:26px;height:26px;fill:none;stroke:var(--shallow);stroke-width:1.1;stroke-linecap:round;stroke-linejoin:round}
+.life-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;cursor:zoom-in;
+  filter:saturate(.85) contrast(1.03)}
+.life-photo:hover{filter:saturate(1) contrast(1.05)}
+.life-name{position:relative;z-index:1;display:block;margin-top:16px;font-family:var(--disp);font-size:21px;font-weight:600;line-height:1.2}
+.life-meta{position:relative;z-index:1;display:block;margin-top:8px;color:var(--mute);font-family:var(--mono);font-size:9px;line-height:1.6}
+.life-conf{color:var(--faint)}
+.life-note{position:relative;z-index:1;display:block;margin-top:10px;color:var(--foam);font-size:11px;line-height:1.55}
+.life-cta{position:relative;z-index:1;display:block;margin-top:11px;color:var(--faint);font-family:var(--mono);font-size:8.5px;letter-spacing:.08em}
+.life-card.is-clickable:hover .life-cta,.life-card.is-clickable:focus-visible .life-cta{color:var(--amber)}
+.life-empty{grid-column:1/-1;padding:30px 22px;border:1px dashed var(--faint);color:var(--mute);font-size:12px;line-height:1.7;text-align:center}
+.life-empty code{color:var(--shallow);font-family:var(--mono);font-size:10px}
+.wishlist-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.wish-card{position:relative;min-height:110px;padding:16px;border:1px dashed rgba(76,157,174,.32);background:rgba(4,20,28,.22)}
+.wish-card.is-spotted{border-style:solid;border-color:rgba(233,161,59,.4)}
+.wish-top{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:24px}
+.wish-glyph{width:22px;height:22px;fill:none;stroke:var(--shallow);stroke-width:1.1;stroke-linecap:round;stroke-linejoin:round}
+.wish-spot{padding:3px 6px;border:1px solid rgba(233,161,59,.5);color:var(--amber);
+  font-family:var(--mono);font-size:7.5px;letter-spacing:.08em;white-space:nowrap}
+.wish-card b{display:block;margin-top:11px;font-size:16px}
+.wish-card span{display:block;margin-top:7px;color:var(--mute);font-family:var(--mono);font-size:9px;line-height:1.45}
+.life-help{margin:12px 0 0;color:var(--mute);font-size:10.5px;line-height:1.65}
+.life-help code{color:var(--shallow);font-family:var(--mono);font-size:9.5px}
+@media(max-width:900px){
+  .marine-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .life-grid,.wishlist-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:760px){
+  .marine-summary{gap:6px}
+  .marine-stat{padding:14px 13px}
+  .marine-stat b{font-size:22px}
+  .life-tabs{padding:6px}
+  .life-tab{flex:0 0 auto;min-width:105px}
+  .life-view{padding:14px}
+  .life-grid,.wishlist-grid{display:grid;grid-auto-flow:column;grid-template-columns:none;grid-auto-columns:78vw;
+    overflow-x:auto;margin-right:-14px;padding-right:14px;scroll-snap-type:x mandatory}
+  .life-card,.wish-card{scroll-snap-align:start}
+  .life-empty{grid-column:auto;grid-row:1}
+}
+
+/* ============================================================
    photos — PHOTO LOG 스트립 · 라이트박스
    사진은 images/trips/*.webp, TRIP_STORIES.cover 로 연결.
    cover 가 null 이면 표시되지 않습니다.
@@ -682,8 +753,9 @@ html,body{overflow-x:hidden}
 <nav class="section-nav" aria-label="로그북 섹션">
   <a href="#map-section"><span>01</span> MAP</a>
   <a href="#memories"><span>02</span> MEMORIES</a>
-  <a href="#data"><span>03</span> DATA</a>
-  <a href="#technical-log"><span>04</span> LOG</a>
+  <a href="#marine-life"><span>03</span> MARINE LIFE</a>
+  <a href="#data"><span>04</span> DATA</a>
+  <a href="#technical-log"><span>05</span> LOG</a>
 </nav>
 
 <section class="chapter" id="map-section" aria-labelledby="map-title">
@@ -708,19 +780,40 @@ html,body{overflow-x:hidden}
   </div>
   <div class="memorygrid" id="memorygrid"></div>
   <div id="photolog"></div>
-  <div class="wildlife-panel">
-    <div class="wildlife-copy"><span class="chapter-no">SEA LIFE NOTES</span><h3>직접 남긴 관찰 기록</h3><p>기록으로 확인되는 생물만 표시합니다. 트립 데이터에 관찰 항목을 더하면 자동으로 확장됩니다.</p></div>
-    <div class="wildlife-list" id="wildlife-list"></div>
-  </div>
   <div class="passport-card">
     <div class="passport-copy"><span class="chapter-no">DIVE PASSPORT</span><h3>6개 나라의 수중 기록</h3><p>국가별 다이브 수를 여권 도장처럼 모았습니다.</p></div>
     <div class="passport" id="passport"></div>
   </div>
 </section>
 
+<section class="chapter" id="marine-life" aria-labelledby="marine-title">
+  <div class="chapter-head">
+    <div><span class="chapter-no">03 · MARINE LIFE</span><h2 id="marine-title">수중 생물 도감</h2></div>
+    <p>어디서 무엇을 만났는지, 첫 관찰과 다시 보고 싶은 생물을 함께 기록합니다.</p>
+  </div>
+  <div class="marine-summary" id="marine-summary"></div>
+  <div class="life-panel">
+    <div class="life-tabs" role="tablist" aria-label="수중 생물 보기">
+      <button class="life-tab" type="button" role="tab" id="tab-sightings" aria-selected="true" aria-controls="view-sightings" data-life-tab="sightings">SIGHTINGS</button>
+      <button class="life-tab" type="button" role="tab" id="tab-lifelist" aria-selected="false" aria-controls="view-lifelist" data-life-tab="lifelist">LIFE LIST</button>
+      <button class="life-tab" type="button" role="tab" id="tab-wishlist" aria-selected="false" aria-controls="view-wishlist" data-life-tab="wishlist">WISHLIST</button>
+    </div>
+    <div class="life-view active" id="view-sightings" role="tabpanel" aria-labelledby="tab-sightings" data-life-view="sightings">
+      <div class="life-grid" id="sightings-grid"></div>
+    </div>
+    <div class="life-view" id="view-lifelist" role="tabpanel" aria-labelledby="tab-lifelist" data-life-view="lifelist">
+      <div class="life-grid" id="lifelist-grid"></div>
+    </div>
+    <div class="life-view" id="view-wishlist" role="tabpanel" aria-labelledby="tab-wishlist" data-life-view="wishlist">
+      <div class="wishlist-grid" id="wishlist-grid"></div>
+      <p class="life-help">관찰 기록은 코드의 <code>LIFE_SIGHTINGS</code> 배열에, 위시리스트는 <code>LIFE_WISHLIST</code> 배열에 추가하면 됩니다.</p>
+    </div>
+  </div>
+</section>
+
 <section class="chapter" id="data" aria-labelledby="data-title">
   <div class="chapter-head">
-    <div><span class="chapter-no">03 · DIVE DATA</span><h2 id="data-title">다이빙 데이터</h2></div>
+    <div><span class="chapter-no">04 · DIVE DATA</span><h2 id="data-title">다이빙 데이터</h2></div>
     <p>전체 기록의 추세를 보고, 여행을 선택해 해당 구간만 강조할 수 있습니다.</p>
   </div>
   <div class="data-snapshot" id="data-snapshot"></div>
@@ -741,7 +834,7 @@ html,body{overflow-x:hidden}
 
 <section class="chapter" id="technical-log" aria-labelledby="log-title">
   <div class="chapter-head">
-    <div><span class="chapter-no">04 · TECHNICAL LOG</span><h2 id="log-title">전체 로그</h2></div>
+    <div><span class="chapter-no">05 · TECHNICAL LOG</span><h2 id="log-title">전체 로그</h2></div>
     <p>트립을 펼치고 다이브를 누르면 기록·환경·장비를 나누어 볼 수 있습니다.</p>
   </div>
   <div class="legend" id="legend"></div>
@@ -788,7 +881,7 @@ const TRIP_STORIES = {
   },
   'Dahab AOWD': {
     summary:'16번의 다이빙으로 이어진 두 번째 다합 기록. 라이트하우스에서 파이프피시를 관찰.', cover:'images/trips/dahab-aowd/cover.webp',
-    species:[{name:'파이프피시',site:'라이트하우스',date:'2024-12-17'}]
+    species:[]
   },
   'Miyakojima': {
     summary:'오키나와 미야코지마에서 이어진 9번의 섬 다이빙.', cover:'images/trips/miyakojima/cover.webp', species:[]
@@ -810,6 +903,34 @@ const TRIP_STORIES = {
   }
 };
 const storyOf = t => TRIP_STORIES[t.name] || {summary:'',cover:null,species:[]};
+
+/* ====== 수중 생물 관찰 기록 — 새 기록은 여기에 추가합니다 ======
+   name       생물명
+   group      카테고리 (LIFE_GROUPS 키: turtle/shark/ray/fish/school/macro/
+              nudibranch/cephalopod/crustacean/coral/other …)
+   date       관찰 날짜 'YYYY-MM-DD'
+   trip       기존 TRIPS 의 name 값 (예: 'Dahab AOWD')
+   site       다이브 포인트명
+   diveNo     다이브 번호 (모르면 null)
+   count      개체 수 (모르면 null)
+   note       관찰 메모
+   photo      상대경로 'images/life/이름.webp' (없으면 null · Base64 금지)
+   confidence 'certain' | 'probable' | 'unknown'
+   featured   대표 관찰 여부 (true/false)
+   ※ 트립별 species 배열에 넣어도 동일하게 집계됩니다. */
+const LIFE_SIGHTINGS = [
+  { name:'파이프피시', group:'macro', date:'2024-12-17', trip:'Dahab AOWD', site:'라이트하우스',
+    diveNo:null, count:1, note:'', photo:null, confidence:'certain', featured:true }
+];
+
+/* 아직 못 만났거나 다시 보고 싶은 생물 — 직접 추가.
+   관찰 기록에 같은 생물명이 생기면 자동으로 SPOTTED 로 표시됩니다. */
+const LIFE_WISHLIST = [
+  { name:'만타레이',   group:'ray',   note:'' },
+  { name:'고래상어',   group:'shark', note:'' },
+  { name:'만다린피시', group:'fish',  note:'' }
+];
+
 /* 자격 취득 시점 — 다이브 번호로 표시됩니다 */
 const MILESTONES = [ {no:4, label:'OWD'}, {no:20, label:'AOWD'} ];
 /* ========================= 이하 표시 로직 ========================= */
@@ -1201,9 +1322,153 @@ document.getElementById('memorygrid').innerHTML=memoryItems.map((m,i)=>`<article
   <span class="memory-label">${m.label}</span><span class="memory-value">${m.value}</span><span class="memory-title">${m.title}</span><span class="memory-meta">${m.meta}</span>
 </article>`).join('');
 
-const sightings=TRIPS.flatMap(t=>(storyOf(t).species||[]).map(x=>({...x,trip:t.ko})));
-document.getElementById('wildlife-list').innerHTML=sightings.length?sightings.map(x=>`<div class="sighting"><b>${x.name}</b><span>${x.trip}<br>${x.site}${x.date?' · '+fmtDate(x.date):''}</span></div>`).join(''):
-  '<div class="wildlife-empty">아직 입력된 관찰 생물이 없습니다.</div>';
+/* ====== MARINE LIFE — 수중 생물 도감 ====== */
+const LIFE_GROUPS = {
+  turtle:'거북이', shark:'상어', ray:'가오리', fish:'어류', school:'무리 어류',
+  macro:'매크로', nudibranch:'갯민숭달팽이', cephalopod:'두족류', crustacean:'갑각류',
+  coral:'산호', pelagic:'대형 어류', invertebrate:'무척추동물', other:'기타'
+};
+/* 카테고리 글리프 — 해도 스타일의 단색 선 아이콘 (외부 라이브러리 없음) */
+const LIFE_GLYPHS = {
+  turtle:'<ellipse cx="8" cy="8.6" rx="4.6" ry="3.4"/><circle cx="13.1" cy="8.6" r="1.1"/><path d="M4.6 5.9 3 4.1M11.4 5.9 13 4.1M4.6 11.3 3 13.1M11.4 11.3 13 13.1"/>',
+  shark:'<ellipse cx="7" cy="8" rx="4.5" ry="2.4"/><path d="M11.2 8 14.2 5.8v4.4z"/><path d="M6.5 5.7 8 3l1.4 2.9"/><circle cx="4.6" cy="7.5" r=".5"/>',
+  ray:'<path d="M8 4l5.5 4.5-5.5 2.2-5.5-2.2z"/><path d="M8 10.7 8 14"/>',
+  fish:'<ellipse cx="7" cy="8" rx="4.2" ry="2.6"/><path d="M11 8 14 6v4z"/><circle cx="4.8" cy="7.4" r=".55"/>',
+  school:'<path d="M2 5l2.2 1.6L2 8.2M6.4 4l2.2 1.6L6.4 7.2M6.4 8.4l2.2 1.6L6.4 11.6M10.8 6.2l2.2 1.6-2.2 1.6"/>',
+  macro:'<circle cx="6.6" cy="6.6" r="3.6"/><path d="M9.4 9.4 13.4 13.4"/><circle cx="6.6" cy="6.6" r="1.1"/>',
+  nudibranch:'<path d="M2.6 10.5c0-3.4 3.2-4.6 5.4-4.6s5.4 1.2 5.4 4.6"/><path d="M2.6 10.5c1.6 1.6 9.2 1.6 10.8 0"/><path d="M5.4 6.4 5 3.6M9.4 6.2 10 3.6"/><circle cx="6.4" cy="8.6" r=".5"/><circle cx="9" cy="8.9" r=".5"/>',
+  cephalopod:'<path d="M4.8 6.5a3.2 3 0 016.4 0v1.8a3.2 3 0 01-6.4 0z"/><path d="M5.2 8.5c-.8 1.8-1.4 3.4-2.4 4.6M7 9c-.4 1.9-.6 3.6-1 5.1M9 9c.4 1.9.6 3.6 1 5.1M10.8 8.5c.8 1.8 1.4 3.4 2.4 4.6"/><circle cx="6.7" cy="6.1" r=".55"/><circle cx="9.3" cy="6.1" r=".55"/>',
+  crustacean:'<ellipse cx="8" cy="9.4" rx="3.8" ry="2.4"/><path d="M4.6 8.4 2.2 6.8M4.4 10 2 10.6M11.4 8.4 13.8 6.8M11.6 10 14 10.6"/><path d="M5.4 7.4 3.8 5.2 2.6 5.6M10.6 7.4 12.2 5.2 13.4 5.6"/><path d="M6.8 7.4 6.4 5.8M9.2 7.4 9.6 5.8"/>',
+  coral:'<path d="M8 14V8"/><path d="M8 8C8 6 6.4 5.2 6 3.6"/><path d="M8 8c0-2 1.6-2.8 2-4.4"/><path d="M8 11c-1.4-.2-2.2-1-2.6-2.6"/><path d="M8 10c1.4-.2 2.2-1 2.6-2.6"/><circle cx="6" cy="3.3" r=".7"/><circle cx="10" cy="3.5" r=".7"/><circle cx="8" cy="7.6" r=".7"/>',
+  other:'<circle cx="8" cy="8" r="5.5" stroke-dasharray="2 2.4"/>'
+};
+LIFE_GLYPHS.pelagic = LIFE_GLYPHS.shark;
+LIFE_GLYPHS.invertebrate = LIFE_GLYPHS.crustacean;
+const escLife = s => String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const lifeGlyph = (g,cls) => `<svg class="${cls||'life-glyph'}" viewBox="0 0 16 16" aria-hidden="true">${LIFE_GLYPHS[g]||LIFE_GLYPHS.other}</svg>`;
+const lifeEmpty = msg => `<div class="life-empty">${msg}</div>`;
+const CONF_KO = {certain:'확인', probable:'추정', unknown:'미확인'};
+
+/* 관찰 기록: 전용 배열 + 트립별 species 를 함께 집계 (트립 정보 자동 연결) */
+const tripByName = Object.fromEntries(TRIPS.map(t=>[t.name, t]));
+const rawSightings = [
+  ...(typeof LIFE_SIGHTINGS!=='undefined' ? LIFE_SIGHTINGS : []),
+  ...TRIPS.flatMap(t => (storyOf(t).species||[]).map(x => ({...x, trip:t.name})))
+];
+const sightings = rawSightings.map(x=>{
+  const t = tripByName[x.trip];
+  return {...x, tripKo: t?t.ko:(x.trip||''), region: t?t.region:''};
+}).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+
+/* LIFE LIST 집계: 같은 생물명을 하나로 묶음 */
+const uniqueLife = new Map();
+sightings.forEach(x=>{
+  const key = String(x.name||'').trim().toLowerCase();
+  if(!key) return;
+  if(!uniqueLife.has(key)) uniqueLife.set(key,{
+    name:x.name, group:x.group||'other', count:0, encounters:0, trips:new Set(),
+    first:x, latest:x, featured:false, photoSighting:null
+  });
+  const u = uniqueLife.get(key);
+  u.count += Number(x.count)||0;
+  u.encounters += 1;
+  if(x.tripKo) u.trips.add(x.tripKo);
+  if((x.date||'') < (u.first.date||'')) u.first = x;
+  if((x.date||'') > (u.latest.date||'')) u.latest = x;
+  if(x.featured) u.featured = true;
+  if(x.photo && (x.featured || !u.photoSighting)) u.photoSighting = x;
+});
+const lifeList = [...uniqueLife.values()].sort((a,b)=>b.encounters-a.encounters || a.name.localeCompare(b.name,'ko'));
+const lifeTrips = new Set(sightings.map(x=>x.tripKo).filter(Boolean));
+const firstSightings = lifeList.length;   /* 최초 관찰 수 = 고유 생물 수 */
+
+/* 상단 요약 통계 */
+document.getElementById('marine-summary').innerHTML = [
+  [sightings.length, '총 관찰 기록'],
+  [lifeList.length,  '고유 생물'],
+  [lifeTrips.size,   '기록된 트립'],
+  [firstSightings,   '최초 관찰']
+].map(([v,l])=>`<div class="marine-stat"><b>${v}</b><span>${escLife(l)}</span></div>`).join('');
+
+/* 미디어(사진 또는 글리프): 사진 오류 시 이미지만 제거되고 글리프가 남음 */
+const lifeMedia = (group, photo, cap, sub) => {
+  const g = lifeGlyph(group);
+  if(!photo) return `<span class="life-media">${g}</span>`;
+  return `<span class="life-media">${g}<img class="life-photo" src="${escLife(photo)}" alt="${escLife(cap)}" loading="lazy"`
+    + ` data-src="${escLife(photo)}" data-cap="${escLife(cap)}" data-sub="${escLife(sub)}"`
+    + ` onerror="this.remove()"></span>`;
+};
+
+/* SIGHTINGS — 개별 관찰 기록 (최신순) */
+document.getElementById('sightings-grid').innerHTML = sightings.length ? sightings.map((x,i)=>{
+  const group = LIFE_GROUPS[x.group] || LIFE_GROUPS.other;
+  const isFirst = i === sightings.length-1;
+  const metaBits = [x.tripKo, x.site, x.diveNo?`#${String(x.diveNo).padStart(2,'0')}`:'', x.date?fmtDate(x.date):''].filter(Boolean);
+  const countBit = (x.count && x.count>1) ? ` · ${x.count}마리` : '';
+  const conf = (x.confidence && x.confidence!=='certain') ? `<span class="life-conf"> · ${escLife(CONF_KO[x.confidence]||x.confidence)}</span>` : '';
+  const clickable = !!tripByName[x.trip];
+  return `<article class="life-card${clickable?' is-clickable':''}"${clickable?` tabindex="0" role="button" data-life-trip="${escLife(x.trip)}" aria-label="${escLife(x.name)} · ${escLife(x.tripKo)} 테크니컬 로그 보기"`:''}>
+    <div class="life-top">
+      <span class="life-group">${escLife(group)}${isFirst?' <span class="life-first">· FIRST</span>':''}</span>
+      ${lifeMedia(x.group, x.photo, x.name, [x.tripKo,x.site].filter(Boolean).join(' · '))}
+    </div>
+    <b class="life-name">${escLife(x.name)}</b>
+    <span class="life-meta">${escLife(metaBits.join(' · '))}${countBit}${conf}</span>
+    ${x.note?`<span class="life-note">${escLife(x.note)}</span>`:''}
+    ${clickable?'<span class="life-cta">테크니컬 로그에서 보기 →</span>':''}
+  </article>`;
+}).join('') : lifeEmpty('아직 입력된 관찰 생물이 없습니다.<br><code>LIFE_SIGHTINGS</code> 배열에 첫 기록을 추가하세요.');
+
+/* LIFE LIST — 생물별 집계 카드 */
+document.getElementById('lifelist-grid').innerHTML = lifeList.length ? lifeList.map(u=>{
+  const group = LIFE_GROUPS[u.group] || LIFE_GROUPS.other;
+  const first = [u.first.tripKo, u.first.date?fmtDate(u.first.date):''].filter(Boolean).join(' · ');
+  const latest = [u.latest.tripKo, u.latest.date?fmtDate(u.latest.date):''].filter(Boolean).join(' · ');
+  const rep = u.photoSighting;
+  return `<article class="life-card">
+    <div class="life-top">
+      <span class="life-group">${escLife(group)}${u.featured?' <span class="life-first">· HIGHLIGHT</span>':''}</span>
+      ${lifeMedia(u.group, rep?rep.photo:null, u.name, first)}
+    </div>
+    <b class="life-name">${escLife(u.name)}</b>
+    <span class="life-meta">${u.encounters}회 관찰 · ${u.trips.size}개 트립<br>FIRST · ${escLife(first)}<br>LATEST · ${escLife(latest)}</span>
+  </article>`;
+}).join('') : lifeEmpty('관찰 기록이 쌓이면 생물별 도감이 자동으로 생성됩니다.');
+
+/* WISHLIST — 보고 싶은 생물 (관찰되면 SPOTTED) */
+document.getElementById('wishlist-grid').innerHTML = (typeof LIFE_WISHLIST!=='undefined' && LIFE_WISHLIST.length) ? LIFE_WISHLIST.map(x=>{
+  const group = LIFE_GROUPS[x.group] || LIFE_GROUPS.other;
+  const spotted = uniqueLife.has(String(x.name||'').trim().toLowerCase());
+  return `<article class="wish-card${spotted?' is-spotted':''}">
+    <div class="wish-top">${lifeGlyph(x.group,'wish-glyph')}${spotted?'<span class="wish-spot">SPOTTED</span>':''}</div>
+    <b>${escLife(x.name)}</b>
+    <span>${escLife(group)}${x.note?'<br>'+escLife(x.note):''}</span>
+  </article>`;
+}).join('') : lifeEmpty('아직 등록된 위시리스트가 없습니다.<br>보고 싶은 생물을 직접 추가해보세요.');
+
+/* 탭 전환 — 버튼이라 Enter/Space 는 기본 동작으로 처리됨 */
+const lifeTabs = [...document.querySelectorAll('.life-tab')];
+lifeTabs.forEach(tab => tab.addEventListener('click', () => {
+  const key = tab.dataset.lifeTab;
+  lifeTabs.forEach(x => x.setAttribute('aria-selected', String(x===tab)));
+  document.querySelectorAll('.life-view').forEach(v => v.classList.toggle('active', v.dataset.lifeView===key));
+}));
+
+/* 관찰 카드 → 해당 트립을 필터하고 테크니컬 로그로 이동 (사진 클릭은 라이트박스가 처리) */
+const sg = document.getElementById('sightings-grid');
+sg.addEventListener('click', e => {
+  if(e.target.closest('.life-photo')) return;
+  const card = e.target.closest('[data-life-trip]');
+  if(!card) return;
+  if(typeof setTrip === 'function') setTrip(card.dataset.lifeTrip);
+  const log = document.getElementById('technical-log');
+  if(log) log.scrollIntoView({behavior:'smooth', block:'start'});
+});
+sg.addEventListener('keydown', e => {
+  if((e.key==='Enter' || e.key===' ') && e.target.matches && e.target.matches('[data-life-trip]')){
+    e.preventDefault(); e.target.click();
+  }
+});
 
 const countryNames={EG:'EGYPT',JP:'JAPAN',PH:'PHILIPPINES',TH:'THAILAND',ID:'INDONESIA',KR:'KOREA'};
 const countryCounts={};
@@ -1278,8 +1543,11 @@ chapters.forEach(s=>sectionObserver.observe(s));
   }
   function closeLB(){ lb.hidden=true; lbImg.removeAttribute('src'); document.body.style.overflow=''; if(lastFocus) lastFocus.focus(); }
   document.addEventListener('click',e=>{
-    const t=e.target.closest('.photolog-item[data-src]');
-    if(t){ lastFocus=t; openLB(t.dataset.full||t.dataset.src,t.dataset.cap,t.dataset.sub,t.querySelector('img')&&t.querySelector('img').alt); return; }
+    const t=e.target.closest('.photolog-item[data-src], .life-photo[data-src]');
+    if(t){ lastFocus=t;
+      const src=t.dataset.full||t.dataset.src;
+      const img=t.matches('img')?t:t.querySelector('img');
+      openLB(src,t.dataset.cap,t.dataset.sub,img?img.alt:t.dataset.cap); return; }
     if(e.target.closest('.lb-close') || e.target===lb) closeLB();
   });
   document.addEventListener('keydown',e=>{ if(e.key==='Escape' && !lb.hidden) closeLB(); });
