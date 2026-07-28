@@ -933,7 +933,7 @@ const TRIP_STORIES = {
   'Phuket': {
     summary:'푸켓 안다만 해역에서 남긴 6번의 기록. 데이보트 MV Mandarin Queen 7 이용.', cover:null, species:[],
     boat:'MV Mandarin Queen 7',
-    /* 시간대별 조류 세기(보드 기록값, 09:00–17:00) */
+    /* 시간대별 조류(kn, 09:00–17:00) */
     conditions:{ current:[
       { date:'2025-12-18', label:'코 비다 녹 · 터틀 락 · 샤크 포인트',
         hours:[[9,2.6],[10,2.6],[11,2.4],[12,2.1],[13,1.8],[14,1.5],[15,1.3],[16,1.3],[17,1.5]] },
@@ -1351,7 +1351,7 @@ function currentStrip(cur){
     +`<span class="cur-hr">${String(hr).padStart(2,'0')}</span></div>`).join('');
   return `<div class="cur-day"><div class="cond-day-h">${fmtDate(cur.date)}<small>${cur.label}</small></div>`
     +`<div class="cur-bars">${bars}</div>`
-    +`<div class="cur-scale">시간대별 조류 세기(보드 기록값) · 최고 ${peak[1]} @${String(peak[0]).padStart(2,'0')}:00 → 최저 ${vmin}</div></div>`;
+    +`<div class="cur-scale">시간대별 조류(kn) · 최고 ${peak[1]}kn @${String(peak[0]).padStart(2,'0')}:00 → 최저 ${vmin}kn</div></div>`;
 }
 function renderConditions(t){
   const c=storyOf(t).conditions;
