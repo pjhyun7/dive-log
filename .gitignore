@@ -4,3 +4,6 @@
 .env.*
 env_cache.json
 node_modules/
+
+# 원본 영상/사진 소스 (변환 결과만 images/ 아래에 커밋)
+gif/
