@@ -550,11 +550,16 @@ html,body{overflow-x:hidden}
 .tc-species{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin-top:14px}
 .tc-species .lead{color:var(--mute);font-family:var(--mono);font-size:9px;letter-spacing:.05em;margin-right:3px}
 .tc-species .species-tag{font-size:8.5px}
-.life-list-groups{display:flex;flex-direction:column;gap:24px}
+.life-list-groups{display:flex;flex-direction:column;gap:12px}
 .life-groupblock{display:flex;flex-direction:column;gap:11px}
-.life-grouphead{display:flex;align-items:center;gap:8px;padding-bottom:7px;border-bottom:1px solid var(--faint);color:var(--foam);font-family:var(--mono);font-size:11px;letter-spacing:.06em}
+.life-grouphead{display:flex;align-items:center;gap:8px;padding:6px 0 7px;border-bottom:1px solid var(--faint);color:var(--foam);font-family:var(--mono);font-size:11px;letter-spacing:.06em;cursor:pointer;user-select:none}
+.life-grouphead:hover{color:var(--amber)}
 .life-grouphead b{font-weight:600}
 .life-grouphead span{color:var(--mute)}
+.life-grouphead .life-chev{margin-left:auto;font-size:13px;line-height:1;color:var(--shallow);transition:transform .2s}
+.life-groupblock.open .life-grouphead .life-chev{transform:rotate(90deg)}
+.life-groupblock .life-grid{display:none}
+.life-groupblock.open .life-grid{display:grid}
 
 .bestgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
 .best-card{position:relative;min-height:205px;padding:20px;text-align:left;color:var(--foam);font:inherit;cursor:pointer;
@@ -1620,9 +1625,15 @@ const lifeCard = u=>{
   </article>`;
 };
 document.getElementById('lifelist-grid').innerHTML = lifeList.length ? orderedGroups.map(g=>`<section class="life-groupblock">
-    <div class="life-grouphead">${lifeGlyph(g)}<b>${escLife(LIFE_GROUPS[g]||LIFE_GROUPS.other)}</b><span>${lifeByGroup.get(g).length}종</span></div>
+    <div class="life-grouphead" role="button" tabindex="0" aria-expanded="false">${lifeGlyph(g)}<b>${escLife(LIFE_GROUPS[g]||LIFE_GROUPS.other)}</b><span>${lifeByGroup.get(g).length}종</span><span class="life-chev" aria-hidden="true">▸</span></div>
     <div class="life-grid">${lifeByGroup.get(g).map(lifeCard).join('')}</div>
   </section>`).join('') : lifeEmpty('관찰 기록이 쌓이면 생물별 도감이 자동으로 생성됩니다.');
+
+/* 카테고리 접기/펼치기 (기본 접힘) */
+const llGrid=document.getElementById('lifelist-grid');
+const toggleGroup=head=>{const b=head.closest('.life-groupblock');const o=b.classList.toggle('open');head.setAttribute('aria-expanded',String(o));};
+llGrid.addEventListener('click',e=>{const h=e.target.closest('.life-grouphead');if(h)toggleGroup(h);});
+llGrid.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.classList&&e.target.classList.contains('life-grouphead')){e.preventDefault();toggleGroup(e.target);}});
 
 /* WISHLIST — 보고 싶은 생물 (관찰되면 SPOTTED) */
 document.getElementById('wishlist-grid').innerHTML = (typeof LIFE_WISHLIST!=='undefined' && LIFE_WISHLIST.length) ? LIFE_WISHLIST.map(x=>{
