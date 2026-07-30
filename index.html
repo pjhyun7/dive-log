@@ -1269,16 +1269,16 @@ function drawPlot(){
       l.style.top=(v/M.scale*100)+'%'; l.innerHTML=`<span>${lb} ${v}m</span>`;
       plot.appendChild(l);
     });
-    // 자격 취득 마일스톤
-    MILESTONES.forEach(ms=>{
-      const x=(ms.no-.5)/DIVES.length*100;
-      const m=document.createElement('div'); m.className='mile'; m.style.left=x+'%';
-      plot.appendChild(m);
-      const l=document.createElement('div'); l.className='milelbl';
-      l.style.left=x+'%'; l.style.top='4px'; l.textContent=ms.label;
-      plot.appendChild(l);
-    });
   }
+  // 자격 취득 마일스톤 — 모든 모드(수심·SAC)에 공통 표시
+  MILESTONES.forEach(ms=>{
+    const x=(ms.no-.5)/DIVES.length*100;
+    const m=document.createElement('div'); m.className='mile'; m.style.left=x+'%';
+    plot.appendChild(m);
+    const l=document.createElement('div'); l.className='milelbl';
+    l.style.left=x+'%'; l.style.top='4px'; l.textContent=ms.label;
+    plot.appendChild(l);
+  });
   // 샵 로그 기준 수심 — 측정값이 없는 다이브만 속 빈 점으로 별도 표시
   if(mode==='depth'){
     DIVES.filter(d=>d.depth==null && d.shop_max!=null).forEach(d=>{
