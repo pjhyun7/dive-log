@@ -5,5 +5,8 @@
 env_cache.json
 node_modules/
 
+# 로그북 원본 사진 (개인정보 — 강사/버디 이름 등. 데이터는 index.html에 추출됨)
+dahab/
+
 # 원본 영상/사진 소스 (변환 결과만 images/ 아래에 커밋)
 gif/
