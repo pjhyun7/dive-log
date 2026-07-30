@@ -4,3 +4,6 @@
 .env.*
 env_cache.json
 node_modules/
+
+# 로그북 원본 사진 (개인정보 — 강사/버디 이름 등. 데이터는 index.html에 추출됨)
+dahab/
